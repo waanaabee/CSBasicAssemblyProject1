@@ -1,3 +1,13 @@
+;  Executable name : encode
+;  Version         : 1.0
+;  Created date    : 1/1/2018
+;  Authors         : Abgottspon Nicola and Gjokaj Dennis
+;  Description     : Program encoding binary files into Base 64.
+;
+;  Build using these commands:
+;    nasm -f elf64 -g -F stabs hexdump2.asm
+;    ld -o hexdump2 hexdump2.o 
+;
 SECTION .bss            ; Section containing uninitialized data
 
     BUFFLEN equ 3       ; We read the file 6 bytes at a time
