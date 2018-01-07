@@ -8,40 +8,40 @@
 ;    nasm -f elf64 -g -F stabs hexdump2.asm
 ;    ld -o hexdump2 hexdump2.o 
 ;
-SECTION .bss            ; Section containing uninitialized data
-
-    BUFFLEN equ 3       ; We read the file 6 bytes at a time
-    Buff:   resb BUFFLEN    ; Text buffer itself
-
 SECTION .data           ; Section containing initialised data
 
-    B64Str: resb 64
-    B64LEN equ $-B64Str
+	Base64Char: db "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	LineFeed: db 10
 
-    Base64Char: db "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+SECTION .bss            ; Section containing uninitialized data
+
+	BUFFLEN equ 3       	; We read the file 3 bytes at a time
+	Buff resb BUFFLEN	; Text buffer itself
+	B64Str resb 64
+	B64LEN equ $-B64Str
 
 SECTION .text           ; Section containing code
 
 global  _start          ; Linker needs this to find the entry point!
 
 _start:
-    nop         ; This no-op keeps gdb happy...
+	nop         ; This no-op keeps gdb happy...
 
 ; Read a buffer full of text from stdin:
 Read:
-    mov eax,3       ; Specify sys_read call
-    mov ebx,0       ; Specify File Descriptor 0: Standard Input
-    mov ecx,Buff        ; Pass offset of the buffer to read to
-    mov edx,BUFFLEN     ; Pass number of bytes to read at one pass
-    int 80h         ; Call sys_read to fill the buffer
-    mov ebp,eax     ; Save # of bytes read from file for later
-    cmp eax,0       ; If eax=0, sys_read reached EOF on stdin
-    je Done         ; Jump If Equal (to 0, from compare)
+	mov eax,3       ; Specify sys_read call
+    	mov ebx,0       ; Specify File Descriptor 0: Standard Input
+	mov ecx,Buff    ; Pass offset of the buffer to read to
+	mov edx,BUFFLEN ; Pass number of bytes to read at one pass
+	int 80h         ; Call sys_read to fill the buffer
+	mov ebp,eax     ; Save # of bytes read from file for later
+	cmp eax,0       ; If eax=0, sys_read reached EOF on stdin
+	je Done         ; Jump If Equal (to 0, from compare)
 
 ; Set up the registers for the process buffer step:
-    mov esi,Buff        ; Place address of file buffer into esi
-    mov edi,B64Str      ; Place address of line string into edi
-    xor ecx,ecx     ; Clear line string pointer to 0
+	mov esi,Buff        ; Place address of file buffer into esi
+	mov edi,B64Str      ; Place address of line string into edi
+	xor ecx,ecx     ; Clear line string pointer to 0
 
 		; convert 3 bytes of input into four B64 characters of output
 		mov   eax,[esi]  ; read 3 bytes of input
@@ -76,9 +76,14 @@ Read:
 		mov edx,B64LEN		; Pass size of the line string
 		int 80h			; Make kernel call to display line string
 		jmp Read		; Loop back and load file buffer again
-
+	
 ; All done! Let's end this party:
 Done:
-    mov eax,1       ; Code for Exit Syscall
-    mov ebx,0       ; Return a code of zero
-    int 80H         ; Make kernel call
+	mov rax, 1		; Code for sys_write call
+	mov rdi, 1		; Specify File Descriptor 1: Standard Output
+	mov rsi, LineFeed	; Pass offset, which is the ASCII code for line feed
+	mov rdx, 1		; Pass the length of the message
+	syscall			; Make kernel call
+	mov eax,1       	; Code for Exit Syscall
+	mov ebx,0       	; Return a code of zero
+	int 80H         	; Make kernel call
