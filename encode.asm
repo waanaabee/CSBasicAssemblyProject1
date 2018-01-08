@@ -18,7 +18,7 @@ SECTION .bss            ; Section containing uninitialized data
 	BUFFLEN equ 3       	; We read the file 3 bytes at a time
 	Buff resb BUFFLEN	; Text buffer itself
 	B64Str resb 64		; OutputString
-	B64LEN equ $-B64Str	: OutputString Length
+	B64LEN equ $-B64Str	; OutputString Length
 
 SECTION .text           	; Section containing code
 
