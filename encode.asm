@@ -58,7 +58,6 @@ ConvertB64:
 	mov   bh,[B64Char+rdx]  ; convert value to character
 	mov   bl,[B64Char+rax]  ; convert value to character
 	mov   [rdi],rbx  	; store four B64 characters as output
-	;add   rdi,4      	; advance output pointer
 
 				; Write the line of hexadecimal values to stdout:
 	call OutputPrint
