@@ -80,7 +80,6 @@ OutputPrint:
 
 ; All done! Let's end this party:
 Done:
-	call OutputPrint
 	mov rax, 1		; Code for sys_write call
 	mov rdi, 1		; Specify File Descriptor 1: Standard Output
 	mov rsi, LineFeed	; Pass offset, which is the ASCII code for line feed
