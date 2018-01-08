@@ -8,6 +8,9 @@
 ;    nasm -f elf64 -g -F stabs hexdump2.asm
 ;    ld -o hexdump2 hexdump2.o
 ;
+;  Usage:
+;    encode < [input file]
+;
 SECTION .data           ; Section containing initialised data
 	;CharacterMap for B64
 	B64Char: db "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
@@ -84,6 +87,6 @@ Done:
 	mov rsi, LineFeed	; Pass offset, which is the ASCII code for line feed
 	mov rdx, 1		; Pass the length of the message
 	syscall			; Make kernel call
-	mov rax,1       	; Code for Exit Syscall
-	mov rbx,0       	; Return a code of zero
-	int 80H         	; Make kernel call
+	mov rax, 60 		; Code for exit
+	mov rdi, 0 		; Return a code of zero
+	syscall			; Make kernel call
